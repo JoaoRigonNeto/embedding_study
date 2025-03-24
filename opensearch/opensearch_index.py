@@ -114,13 +114,12 @@ zipped_embeddings = dict(zip(texts, embeddings))
 query_text = "moments feel timeless"
 query_vector = gen_embds([query_text], model)[0]
 k = 3
-print(query_vector)
 
 query = {
     "size": k,
     "query": {
         "knn": {
-            "embedding": {
+            "embeddings": {
                 "vector": query_vector,
                 "k": k
             }
@@ -129,7 +128,6 @@ query = {
 }
 
 response = client.search(index=index_name, body=query)
-print(query_text)
 print(response)
 
 for hit in response["hits"]["hits"]:
@@ -137,29 +135,23 @@ for hit in response["hits"]["hits"]:
 
 #--------------------------------------------------Create index--------------------------------------------------
 # index_body = {
-# "settings": {
-#     "index.knn": True
-#   },
-#   "mappings": {
-#     "properties": {
-#       "embedding": {
-#         "type": "knn_vector",
-#         "dimension": 384,
-#         "space_type": "cosinesimil",
-#         "method": {
-#           "name": "hnsw",
-#           "engine": "faiss",
-#           "parameters": {
-#             "ef_construction": 128,
-#             "m": 24
-#           }
+#      "settings": {
+#         "index.knn": True
+#     },
+#     'mappings': {
+#         'properties': {
+#             'embeddings': {
+#                 'type': 'knn_vector',
+#                 'dimension': 384,  
+#                 "method": {
+#                     "engine": "nmslib",
+#                     "name": "hnsw",
+#                     "space_type": "cosinesimil" 
+#                 }
+#             },
+#             'text_content': {'type': 'text'},
 #         }
-#       },
-#       "text_content": {
-#         "type": "text"
-#       }
 #     }
-#   }
 # }
 # try:
 #     if not client.indices.exists(index=index_name):
